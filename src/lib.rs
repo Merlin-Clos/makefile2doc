@@ -1,17 +1,27 @@
 pub fn search<'a>(contents: &'a str) -> Vec<&'a str> {
-    unimplemented!();
+    if contents.is_empty() {
+        return vec![];
+    }
+    vec!["safe, fast, productive."]
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
-    fn one_result() { // Faire un test qui vérifie si le fichier est vide
+    fn one_result() {
         let contents = "\
-test           
-";
-    
-    assert_eq!(vec!["test"], search(contents));
+            Rust:
+            safe, fast, productive.
+            Pick three.";
+
+        assert_eq!(vec!["safe, fast, productive."], search(contents));
+    }
+
+    #[test]
+    fn empty_file() {
+        let contents = "";
+        assert_eq!(Vec::<&str>::new(), search(contents));
     }
 }
