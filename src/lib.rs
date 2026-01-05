@@ -19,13 +19,23 @@ up:
     docker compose up
 ";
 
-        assert_eq!(
-            vec![
-                "## @target: build",
-                "## @name: up",
-                "## @desc: Start the docker container"
-            ],
-            search(contents)
-        );
+        let expected = vec![
+            "## @target: build",
+            "## @name: up",
+            "## @desc: Start the docker container",
+        ];
+        
+        assert_eq!(expected, search(contents));
+    }
+
+    #[test]
+    fn finds_no_results() {
+        let contents = "\
+up:
+    docker compose up
+";
+        let expected: Vec<&str> = Vec::new();
+
+        assert_eq!(expected, search(contents));
     }
 }

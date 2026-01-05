@@ -8,12 +8,12 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let config = Config::build(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {err}");
+        eprintln!("Error: {err}");
         process::exit(1);
     });
 
     if let Err(e) = run(config) {
-        println!("Application error: {e}");
+        eprintln!("Application error: {e}");
         process::exit(1);
     }
 }
@@ -40,11 +40,15 @@ impl Config {
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
 
-    for line in search(&contents) {
-        println!("{line}");
+    let results = search(&contents);
+
+    if results.is_empty() {
+        return Err("No documented targets found in this Makefile".into());
     }
 
-    println!("With text:\n{contents}");
+    for line in results {
+        println!("{line}");
+    }
 
     Ok(())
 }
