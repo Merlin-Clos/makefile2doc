@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "make-docs"
+name = "makefile2doc"
 version = "0.1.0"

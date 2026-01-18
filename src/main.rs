@@ -1,4 +1,4 @@
-use make_docs::search;
+use makefile2doc::search;
 use std::env;
 use std::error::Error;
 use std::fs;
