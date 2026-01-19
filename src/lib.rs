@@ -1,3 +1,7 @@
+pub mod model;
+pub mod parser;
+pub mod generator;
+
 pub fn search<'a>(contents: &'a str) -> Vec<&'a str> {
     contents
         .lines()
