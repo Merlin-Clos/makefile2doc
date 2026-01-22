@@ -1,6 +1,6 @@
 # Makefile Documentation
 
-## ⚡️ Cheat Sheet
+## Cheat Sheet
 | Command | Category | Description |
 | :--- | :--- | :--- |
 | [`make up`](#development) | Development | Start the full development environment (Docker) |
@@ -28,28 +28,89 @@
 
 ## Workflow Graph
 ```mermaid
-graph TD;
-    logs --> up;
-    shell-back --> up;
-    shell-front --> up;
-    shell-db --> up;
-    install --> install-back;
-    install --> install-front;
-    migrate --> up;
-    migrate --> install;
-    seed --> migrate;
-    test-back --> install;
-    lint-front --> install-front;
-    lint-back --> install-back;
-    fix-front --> install-front;
-    fix-back --> install-back;
-    lint --> lint-front;
-    lint --> lint-back;
-    fix --> fix-front;
-    fix --> fix-back;
-    build-front --> install;
-    deploy --> build-front;
-    deploy --> migrate;
+flowchart LR
+    subgraph Development
+        up(up)
+        down(down)
+        logs(logs)
+        shell-back(shell-back)
+        shell-front(shell-front)
+        shell-db(shell-db)
+    end
+    style Development fill:transparent,stroke-dasharray: 5 5
+    classDef cat0 fill:#E1F5FE,stroke:#01579B,stroke-width:2px,color:#000;
+    class up cat0
+    class down cat0
+    class logs cat0
+    class shell-back cat0
+    class shell-front cat0
+    class shell-db cat0
+    subgraph Setup
+        install-back(install-back)
+        install-front(install-front)
+        install(install)
+    end
+    style Setup fill:transparent,stroke-dasharray: 5 5
+    classDef cat1 fill:#E8F5E9,stroke:#1B5E20,stroke-width:2px,color:#000;
+    class install-back cat1
+    class install-front cat1
+    class install cat1
+    subgraph Database
+        migrate(migrate)
+        seed(seed)
+    end
+    style Database fill:transparent,stroke-dasharray: 5 5
+    classDef cat2 fill:#FFF3E0,stroke:#E65100,stroke-width:2px,color:#000;
+    class migrate cat2
+    class seed cat2
+    subgraph Quality
+        test-back(test-back)
+        lint-front(lint-front)
+        lint-back(lint-back)
+        fix-front(fix-front)
+        fix-back(fix-back)
+        lint(lint)
+        fix(fix)
+    end
+    style Quality fill:transparent,stroke-dasharray: 5 5
+    classDef cat3 fill:#F3E5F5,stroke:#4A148C,stroke-width:2px,color:#000;
+    class test-back cat3
+    class lint-front cat3
+    class lint-back cat3
+    class fix-front cat3
+    class fix-back cat3
+    class lint cat3
+    class fix cat3
+    subgraph Deployment
+        build-front(build-front)
+        deploy(deploy)
+    end
+    style Deployment fill:transparent,stroke-dasharray: 5 5
+    classDef cat4 fill:#FFEBEE,stroke:#B71C1C,stroke-width:2px,color:#000;
+    class build-front cat4
+    class deploy cat4
+
+    logs --> up
+    shell-back --> up
+    shell-front --> up
+    shell-db --> up
+    install --> install-back
+    install --> install-front
+    migrate --> up
+    migrate --> install
+    seed --> migrate
+    test-back --> install
+    lint-front --> install-front
+    lint-back --> install-back
+    fix-front --> install-front
+    fix-back --> install-back
+    lint --> lint-front
+    lint --> lint-back
+    fix --> fix-front
+    fix --> fix-back
+    build-front --> install
+    deploy --> build-front
+    deploy --> migrate
 ```
 
 ---
