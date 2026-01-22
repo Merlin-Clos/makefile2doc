@@ -1,4 +1,4 @@
-use makefile2doc::search;
+use makefile2doc::process;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -39,16 +39,8 @@ impl Config {
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
-
-    let results = search(&contents);
-
-    if results.is_empty() {
-        return Err("No documented targets found in this Makefile".into());
-    }
-
-    for line in results {
-        println!("{line}");
-    }
+    let results = process(&contents);
+    println!("{}", results);
 
     Ok(())
 }
