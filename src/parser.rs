@@ -76,6 +76,12 @@ pub fn parse(content: &str) -> MakefileDoc {
         let line = line.trim();
 
         if let Some(cat) = try_extract_category(line) {
+            if categories.iter().any(|c| c.name == cat) {
+                eprint!(
+                    "Warning: The category '{}' is defined multiple times, you should consider combining them.",
+                    cat
+                )
+            }
             ctx.current_category = cat;
             continue;
         }
@@ -96,6 +102,11 @@ pub fn parse(content: &str) -> MakefileDoc {
         }
 
         if let Some(target_name) = try_extract_target(line) {
+            if ctx.buffer_desc.is_empty() {
+                ctx.clear_metadata();
+                continue;
+            }
+
             let command = Command {
                 name: target_name,
                 description: ctx.buffer_desc.clone(),
@@ -137,7 +148,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_clean_content_edge_cases() {
+    fn clean_content_edge_cases() {
         let bad_inputs = vec![
             "",         // Empty
             "   ",      // Spaces
@@ -298,5 +309,76 @@ mod tests {
         );
         assert_eq!(seed.dependencies, vec!["migrate"]);
         assert_eq!(seed.env, vec!["SEED_CLASS"]);
+    }
+
+    #[test]
+    fn ignores_targets_without_description() {
+        let content = r#"
+                ## @description Public Command
+                public:
+                
+                # No @description here
+                private:
+                
+                ## @description Another Public
+                public2:
+            "#;
+
+        let doc = parse(content);
+        let cat = &doc.categories[0];
+
+        assert_eq!(
+            cat.commands.len(),
+            2,
+            "Should have ignored the private command"
+        );
+        assert_eq!(cat.commands[0].name, "public");
+        assert_eq!(cat.commands[1].name, "public2");
+    }
+
+    #[test]
+    fn optional_metadata_are_empty_by_default() {
+        let content = r#"
+                ## @description Simple command
+                simple:
+            "#;
+
+        let doc = parse(content);
+        let cmd = &doc.categories[0].commands[0];
+
+        assert_eq!(cmd.name, "simple");
+        assert_eq!(cmd.description, "Simple command");
+        assert!(cmd.dependencies.is_empty(), "Dependencies should be empty");
+        assert!(cmd.env.is_empty(), "Env should be empty");
+    }
+
+    #[test]
+    fn merges_split_categories() {
+        let content = r#"
+                ## @category Database
+                ## @description Migrations
+                migrate:
+                
+                ## @category Frontend
+                ## @description Build
+                build:
+                
+                ## @category Database
+                ## @description Seed
+                seed:
+            "#;
+
+        let doc = parse(content);
+
+        assert_eq!(doc.categories.len(), 2);
+
+        let db_cat = doc
+            .categories
+            .iter()
+            .find(|c| c.name == "Database")
+            .unwrap();
+        assert_eq!(db_cat.commands.len(), 2);
+        assert_eq!(db_cat.commands[0].name, "migrate");
+        assert_eq!(db_cat.commands[1].name, "seed");
     }
 }
