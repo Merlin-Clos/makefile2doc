@@ -10,7 +10,7 @@ pub fn generate(doc: &MakefileDoc) -> String {
 
     md.push_str(&generate_workflow_graph(doc));
 
-    md.push_str("---\n\n");
+    md.push_str("\n---\n\n");
 
     md.push_str(&generate_section_details(doc));
     md
@@ -41,16 +41,52 @@ fn generate_workflow_graph(doc: &MakefileDoc) -> String {
     let mut section = String::new();
     section.push_str("## Workflow Graph\n");
     section.push_str("```mermaid\n");
-    section.push_str("graph TD;\n");
+    section.push_str("flowchart LR\n");
 
+    for (i, cat) in doc.categories.iter().enumerate() {
+        let safe_cat_name = cat.name.replace(" ", "_");
+
+        section.push_str(&format!("    subgraph {}\n", safe_cat_name));
+
+        for cmd in &cat.commands {
+            section.push_str(&format!("        {}({})\n", cmd.name, cmd.name));
+        }
+
+        section.push_str("    end\n");
+
+        section.push_str(&format!(
+            "    style {} fill:transparent,stroke-dasharray: 5 5\n",
+            safe_cat_name
+        ));
+
+        let colors = [
+            "#E1F5FE", "#E8F5E9", "#FFF3E0", "#F3E5F5", "#FFEBEE", "#ECEFF1",
+        ];
+        let stroke_colors = [
+            "#01579B", "#1B5E20", "#E65100", "#4A148C", "#B71C1C", "#263238",
+        ];
+        let color_idx = i % colors.len();
+
+        section.push_str(&format!(
+            "    classDef cat{} fill:{},stroke:{},stroke-width:2px,color:#000;\n",
+            i, colors[color_idx], stroke_colors[color_idx]
+        ));
+
+        for cmd in &cat.commands {
+            section.push_str(&format!("    class {} cat{}\n", cmd.name, i));
+        }
+    }
+
+    section.push_str("\n");
     for cat in &doc.categories {
         for cmd in &cat.commands {
             for dep in &cmd.dependencies {
-                section.push_str(&format!("    {} --> {};\n", cmd.name, dep));
+                section.push_str(&format!("    {} --> {}\n", cmd.name, dep));
             }
         }
     }
-    section.push_str("```\n\n");
+
+    section.push_str("```\n");
     section
 }
 
