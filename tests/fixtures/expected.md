@@ -1,6 +1,6 @@
 # Makefile Documentation
 
-## ⚡️ Cheat Sheet
+## Cheat Sheet
 | Command | Category | Description |
 | :--- | :--- | :--- |
 | [`make up`](#development) | Development | Start the full development environment (Docker) |

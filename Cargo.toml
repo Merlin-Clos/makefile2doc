@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 clap = { version = "4.5.54", features = ["derive", "cargo"] }
 lazy-regex = "3.5.1"
+pretty_assertions = "1.4.1"
 regex = "1.12.2"
