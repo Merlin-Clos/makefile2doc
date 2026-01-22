@@ -74,7 +74,7 @@ pub fn parse(content: &str) -> MakefileDoc {
 
     for line in lines {
         let line = line.trim();
-        
+
         if let Some(cat) = try_extract_category(line) {
             ctx.current_category = cat;
             continue;
@@ -137,47 +137,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn clean_content_return_error_if_empty() {
-        let input = "";
-        let result = clean_content(input);
+    fn test_clean_content_edge_cases() {
+        let bad_inputs = vec![
+            "",         // Empty
+            "   ",      // Spaces
+            "\n",       // Line break
+            "\t",       // Tabulation
+            " \t\n ",   // Space + Tab + LB
+            "\r\n",     // Windows style
+            "   \n   ", // Multiple empty lines
+        ];
 
-        assert_eq!(result, Err("The Makefile is empty"))
+        for (i, input) in bad_inputs.iter().enumerate() {
+            let result = clean_content(input);
+            assert_eq!(
+                result,
+                Err("The Makefile is empty"),
+                "Failed for input #{}: {:?}",
+                i,
+                input
+            );
+        }
     }
 
     #[test]
-    fn clean_content_return_error_if_only_spaces() {
-        let input = "     ";
-        let result = clean_content(input);
-
-        assert_eq!(result, Err("The Makefile is empty"))
-    }
-
-    #[test]
-    fn clean_content_return_error_if_line_break() {
-        let input = "\n";
-        let result = clean_content(input);
-
-        assert_eq!(result, Err("The Makefile is empty"))
-    }
-
-    #[test]
-    fn clean_content_return_error_if_indent() {
-        let input = "\t";
-        let result = clean_content(input);
-
-        assert_eq!(result, Err("The Makefile is empty"))
-    }
-
-    #[test]
-    fn clean_content_return_error_if_spaces_indent_line_break() {
-        let input = " \t\n ";
-        let result = clean_content(input);
-
-        assert_eq!(result, Err("The Makefile is empty"))
-    }
-    
-    #[test]
-    fn test_parse_makefile() {
+    fn parse_single_cat_makefile_with_line_break() {
         let content = r#"
             ## @category Deployment
             ## @description Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force
@@ -188,18 +172,131 @@ mod tests {
             
             deploy:
             "#;
-        
+
         let doc = parse(content);
         assert_eq!(doc.categories.len(), 1);
-        
+
         let cat = &doc.categories[0];
         assert_eq!(cat.name, "Deployment");
         assert_eq!(cat.commands.len(), 1);
-        
+
         let cmd = &cat.commands[0];
         assert_eq!(cmd.name, "deploy");
-        assert_eq!(cmd.description, r#"Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force"#);
+        assert_eq!(
+            cmd.description,
+            r#"Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force"#
+        );
         assert_eq!(cmd.dependencies, vec!["build-front", "migrate"]);
         assert_eq!(cmd.env, vec!["APP_KEY", "SSH_USER"]);
+    }
+
+    #[test]
+    fn parse_multiple_cat_makefile() {
+        let content = r#"
+            ## @category Deployment
+            ## @description Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force
+            ## @depends build-front, migrate
+            ## @env APP_KEY, SSH_USER
+            deploy:
+            
+            ## @category Database
+            ## @description Reset the DB and run seeds (Test data) \n Warning: This deletes all data!
+            ## @depends migrate
+            ## @env SEED_CLASS
+            seed:
+            "#;
+
+        let doc = parse(content);
+        assert_eq!(doc.categories.len(), 2);
+
+        let deployment = &doc.categories[0];
+        assert_eq!(deployment.name, "Deployment");
+        let database = &doc.categories[1];
+        assert_eq!(database.name, "Database");
+
+        let deploy = &deployment.commands[0];
+        assert_eq!(deploy.name, "deploy");
+        assert_eq!(
+            deploy.description,
+            r#"Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force"#
+        );
+        assert_eq!(deploy.dependencies, vec!["build-front", "migrate"]);
+        assert_eq!(deploy.env, vec!["APP_KEY", "SSH_USER"]);
+
+        let lint = &database.commands[0];
+        assert_eq!(lint.name, "seed");
+        assert_eq!(
+            lint.description,
+            r#"Reset the DB and run seeds (Test data) \n Warning: This deletes all data!"#
+        );
+        assert_eq!(lint.dependencies, vec!["migrate"]);
+        assert_eq!(lint.env, vec!["SEED_CLASS"]);
+    }
+
+    #[test]
+    fn parse_single_general_cat_makefile() {
+        let content = r#"
+            ## @description Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force
+            ## @depends build-front, migrate
+            ## @env APP_KEY, SSH_USER
+            deploy:
+            "#;
+
+        let doc = parse(content);
+        assert_eq!(doc.categories.len(), 1);
+
+        let general = &doc.categories[0];
+        assert_eq!(general.name, "General");
+
+        let deploy = &general.commands[0];
+        assert_eq!(deploy.name, "deploy");
+        assert_eq!(
+            deploy.description,
+            r#"Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force"#
+        );
+        assert_eq!(deploy.dependencies, vec!["build-front", "migrate"]);
+        assert_eq!(deploy.env, vec!["APP_KEY", "SSH_USER"]);
+    }
+
+    #[test]
+    fn parse_single_and_general_cat_makefile() {
+        let content = r#"
+            ## @description Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force
+            ## @depends build-front, migrate
+            ## @env APP_KEY, SSH_USER
+            deploy:
+            
+            ## @category Database
+            ## @description Reset the DB and run seeds (Test data) \n Warning: This deletes all data!
+            ## @depends migrate
+            ## @env SEED_CLASS
+            seed:
+            "#;
+
+        let doc = parse(content);
+        assert_eq!(doc.categories.len(), 2);
+
+        let general = &doc.categories[0];
+        assert_eq!(general.name, "General");
+        let database = &doc.categories[1];
+        assert_eq!(database.name, "Database");
+
+        let deploy = &general.commands[0];
+        assert_eq!(deploy.name, "deploy");
+        assert_eq!(
+            deploy.description,
+            r#"Deploy to Production \n 1. Build frontend assets \n 2. Optimize Laravel cache \n 3. Run migrations force"#
+        );
+        assert_eq!(deploy.dependencies, vec!["build-front", "migrate"]);
+        assert_eq!(deploy.env, vec!["APP_KEY", "SSH_USER"]);
+
+        let seed = &database.commands[0];
+        assert_eq!(seed.name, "seed");
+        assert_eq!(
+            seed.description,
+            r#"Reset the DB and run seeds (Test data) \n Warning: This deletes all data!"#
+        );
+        assert_eq!(seed.dependencies, vec!["migrate"]);
+        assert_eq!(seed.env, vec!["SEED_CLASS"]);
     }
 }
