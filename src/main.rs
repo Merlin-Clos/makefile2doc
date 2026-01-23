@@ -1,46 +1,56 @@
+use clap::Parser;
 use makefile2doc::process;
-use std::env;
-use std::error::Error;
 use std::fs;
+use std::path::PathBuf;
 use std::process;
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(default_value = "Makefile")]
+    input: PathBuf,
+
+    #[arg(default_value = "MAKEFILE.md")]
+    output: Option<PathBuf>,
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = Args::parse();
 
-    let config = Config::build(&args).unwrap_or_else(|err| {
-        eprintln!("Error: {err}");
-        process::exit(1);
-    });
-
-    if let Err(e) = run(config) {
-        eprintln!("Application error: {e}");
-        process::exit(1);
-    }
-}
-
-struct Config {
-    file_path: String,
-}
-
-impl Config {
-    fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 2 {
-            return Err("Not enough arguments");
+    let content = match fs::read_to_string(&args.input) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!(
+                "Error: Impossible to read the file '{}'",
+                args.input.display()
+            );
+            eprintln!("Details: '{}'", e);
+            process::exit(1);
         }
-        let file_path = args[1].clone();
+    };
 
-        if file_path != "Makefile" {
-            return Err("makedoc only make the documentation for Makefiles");
+    let markdown = process(&content);
+
+    match args.output {
+        Some(path) => {
+            if let Err(e) = fs::write(&path, markdown) {
+                eprintln!(
+                    "Error: Impossible to write the documentation '{}'",
+                    path.display()
+                );
+                eprintln!("Details: '{}'", e);
+                process::exit(1);
+            }
         }
-
-        Ok(Config { file_path })
+        None => {
+            if let Err(e) = fs::write(&args.input, markdown) {
+                eprintln!(
+                    "Error: Impossible to write the documentation '{}'",
+                    &args.input.display()
+                );
+                eprintln!("Details: '{}'", e);
+                process::exit(1);
+            }
+        }
     }
-}
-
-fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string(config.file_path)?;
-    let results = process(&contents);
-    println!("{}", results);
-
-    Ok(())
 }
