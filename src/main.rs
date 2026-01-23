@@ -1,46 +1,50 @@
+use clap::Parser;
 use makefile2doc::process;
-use std::env;
-use std::error::Error;
 use std::fs;
+use std::path::{Path, PathBuf};
 use std::process;
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short = 'i', long, default_value = "Makefile")]
+    input: PathBuf,
+
+    #[arg(short = 'o', long)]
+    output: Option<PathBuf>,
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = Args::parse();
 
-    let config = Config::build(&args).unwrap_or_else(|err| {
-        eprintln!("Error: {err}");
-        process::exit(1);
-    });
+    let content = match fs::read_to_string(&args.input) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Error: Unable to read the file '{}'", args.input.display());
+            eprintln!("Details: '{}'", e);
+            process::exit(1);
+        }
+    };
 
-    if let Err(e) = run(config) {
-        eprintln!("Application error: {e}");
+    let markdown = process(&content);
+
+    let output_path = match args.output {
+        Some(path) => path,
+        None => {
+            let parent = args.input.parent().unwrap_or(Path::new("."));
+            parent.join("MAKEFILE.md")
+        }
+    };
+
+    if let Err(e) = fs::write(&output_path, markdown) {
+        eprintln!(
+            "Error: Unable to write the file '{}'",
+            output_path.display()
+        );
+
+        eprintln!("Details: {}", e);
         process::exit(1);
     }
-}
 
-struct Config {
-    file_path: String,
-}
-
-impl Config {
-    fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 2 {
-            return Err("Not enough arguments");
-        }
-        let file_path = args[1].clone();
-
-        if file_path != "Makefile" {
-            return Err("makedoc only make the documentation for Makefiles");
-        }
-
-        Ok(Config { file_path })
-    }
-}
-
-fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string(config.file_path)?;
-    let results = process(&contents);
-    println!("{}", results);
-
-    Ok(())
+    println!("Successfully generated documentation at {}", output_path.display());
 }
