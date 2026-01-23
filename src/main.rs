@@ -1,16 +1,16 @@
 use clap::Parser;
 use makefile2doc::process;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    #[arg(default_value = "Makefile")]
+    #[arg(short = 'i', long, default_value = "Makefile")]
     input: PathBuf,
 
-    #[arg(default_value = "MAKEFILE.md")]
+    #[arg(short = 'o', long)]
     output: Option<PathBuf>,
 }
 
@@ -20,10 +20,7 @@ fn main() {
     let content = match fs::read_to_string(&args.input) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!(
-                "Error: Impossible to read the file '{}'",
-                args.input.display()
-            );
+            eprintln!("Error: Unable to read the file '{}'", args.input.display());
             eprintln!("Details: '{}'", e);
             process::exit(1);
         }
@@ -31,26 +28,23 @@ fn main() {
 
     let markdown = process(&content);
 
-    match args.output {
-        Some(path) => {
-            if let Err(e) = fs::write(&path, markdown) {
-                eprintln!(
-                    "Error: Impossible to write the documentation '{}'",
-                    path.display()
-                );
-                eprintln!("Details: '{}'", e);
-                process::exit(1);
-            }
-        }
+    let output_path = match args.output {
+        Some(path) => path,
         None => {
-            if let Err(e) = fs::write(&args.input, markdown) {
-                eprintln!(
-                    "Error: Impossible to write the documentation '{}'",
-                    &args.input.display()
-                );
-                eprintln!("Details: '{}'", e);
-                process::exit(1);
-            }
+            let parent = args.input.parent().unwrap_or(Path::new("."));
+            parent.join("MAKEFILE.md")
         }
+    };
+
+    if let Err(e) = fs::write(&output_path, markdown) {
+        eprintln!(
+            "Error: Unable to write the file '{}'",
+            output_path.display()
+        );
+
+        eprintln!("Details: {}", e);
+        process::exit(1);
     }
+
+    println!("Successfully generated documentation at {}", output_path.display());
 }
