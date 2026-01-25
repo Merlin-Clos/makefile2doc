@@ -2,6 +2,7 @@
 name = "makefile2doc"
 version = "0.1.0"
 edition = "2024"
+authors = ["Merlin Clos"]
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive", "cargo"] }
