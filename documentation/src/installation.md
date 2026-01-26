@@ -5,13 +5,15 @@
 The easiest way to install `makefile2doc` is to download the latest executable for your operating system.
 
 1. Go to the **[GitHub Releases page](https://github.com/Merlin-Clos/makefile2doc/releases/latest)**.
-2. Download the archive matching your OS and architecture (Linux, macOS, or Windows).
-3. Extract the archive to obtain the `makefile2doc` binary.
+2. Download the file matching your OS and architecture (e.g., `makefile2doc-linux-amd64`).
+3. **Rename the file** to `makefile2doc` (or `makefile2doc.exe` on Windows) to make it easier to use.
 
 ## 2. Setup
 
 ### Linux & macOS
 To use the command globally, make it executable and move it to a folder in your system `$PATH`.
+
+*Assuming you are in the folder where you downloaded the file:*
 
 ```bash
 chmod +x makefile2doc
