@@ -46,5 +46,8 @@ fn main() {
         process::exit(1);
     }
 
-    println!("Successfully generated documentation at {}", output_path.display());
+    println!(
+        "Successfully generated documentation at {}",
+        output_path.display()
+    );
 }
