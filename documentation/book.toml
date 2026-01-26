@@ -2,6 +2,7 @@
 title = "makefile2doc Documentation"
 authors = ["Merlin Clos"]
 language = "en"
+description = "Documentation for the makefile2doc CLI"
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
@@ -10,3 +11,6 @@ command = "mdbook-mermaid"
 
 [output.html]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
+git-repository-url = "https://github.com/Merlin-Clos/makefile2doc"
+git-repository-icon = "fab-github"
+edit-url-template = "https://github.com/Merlin-Clos/makefile2doc/edit/main/documentation/{path}"

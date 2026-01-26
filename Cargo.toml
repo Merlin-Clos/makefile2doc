@@ -3,9 +3,23 @@ name = "makefile2doc"
 version = "0.1.0"
 edition = "2024"
 authors = ["Merlin Clos"]
+description = "A CLI to document GNU Makefiles to markdown"
+repository = "https://github.com/Merlin-Clos/makefile2doc"
+documentation = "https://merlin-clos.github.io/makefile2doc/"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive", "cargo"] }
 lazy-regex = "3.5.1"
-pretty_assertions = "1.4.1"
 regex = "1.12.2"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
