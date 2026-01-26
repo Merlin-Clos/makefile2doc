@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c5b0713a.js";
+            window.path_to_searchindex_js = "searchindex-a98eb832.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-bb925fd6.js"></script>
@@ -527,12 +527,13 @@ deploy:
 <p>The easiest way to install <code>makefile2doc</code> is to download the latest executable for your operating system.</p>
 <ol>
 <li>Go to the <strong><a href="https://github.com/Merlin-Clos/makefile2doc/releases/latest">GitHub Releases page</a></strong>.</li>
-<li>Download the archive matching your OS and architecture (Linux, macOS, or Windows).</li>
-<li>Extract the archive to obtain the <code>makefile2doc</code> binary.</li>
+<li>Download the file matching your OS and architecture (e.g., <code>makefile2doc-linux-amd64</code>).</li>
+<li><strong>Rename the file</strong> to <code>makefile2doc</code> (or <code>makefile2doc.exe</code> on Windows) to make it easier to use.</li>
 </ol>
 <h2 id="2-setup"><a class="header" href="#2-setup">2. Setup</a></h2>
 <h3 id="linux--macos"><a class="header" href="#linux--macos">Linux &amp; macOS</a></h3>
 <p>To use the command globally, make it executable and move it to a folder in your system <code>$PATH</code>.</p>
+<p><em>Assuming you are in the folder where you downloaded the file:</em></p>
 <pre><code class="language-bash">chmod +x makefile2doc
 sudo mv makefile2doc /usr/local/bin/
 </code></pre>
