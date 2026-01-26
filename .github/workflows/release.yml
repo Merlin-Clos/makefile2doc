@@ -1,0 +1,63 @@
+name: Release CLI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  CARGO_TERM_COLOR: always
+  BIN_NAME: makefile2doc
+
+jobs:
+  build-and-release:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # --- Linux x64 ---
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            suffix: -linux-amd64
+          
+          # --- Windows x64 ---
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            suffix: -windows-amd64.exe
+          
+          # --- macOS ARM ---
+          - os: macos-15
+            target: aarch64-apple-darwin
+            suffix: -darwin-arm64
+
+          # --- macOS Intel ---
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            suffix: -darwin-amd64
+
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: Rename binary
+        shell: bash
+        run: |
+          if [[ "${{ matrix.suffix }}" == *".exe" ]]; then
+            cp "target/${{ matrix.target }}/release/$BIN_NAME.exe" "$BIN_NAME${{ matrix.suffix }}"
+          else
+            cp "target/${{ matrix.target }}/release/$BIN_NAME" "$BIN_NAME${{ matrix.suffix }}"
+          fi
+          
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.BIN_NAME }}${{ matrix.suffix }}
