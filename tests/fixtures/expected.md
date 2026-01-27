@@ -4,24 +4,24 @@
 ## Cheat Sheet
 | Command | Category | Description |
 | :--- | :--- | :--- |
-| [`make up`](#development) | Development | Start the full development environment (Docker) |
-| [`make down`](#development) | Development | Stop all containers |
-| [`make logs`](#development) | Development | Show live logs for all services |
-| [`make shell-back`](#development) | Development | Open a shell inside the PHP container (Laravel) |
-| [`make shell-front`](#development) | Development | Open a shell inside the Node.js container |
-| [`make shell-db`](#development) | Development | Open a shell inside the PostgreSQL container |
-| [`make install-back`](#setup) | Setup | Install backend (Composer) |
-| [`make install-front`](#setup) | Setup | Install frontend (NPM) dependencies |
-| [`make install`](#setup) | Setup | Run both backend and frontend installations |
+| [`make up`](#development-environnement) | Development Environnement | Start the full development environment (Docker) |
+| [`make down`](#development-environnement) | Development Environnement | Stop all containers |
+| [`make logs`](#development-environnement) | Development Environnement | Show live logs for all services |
+| [`make shell-back`](#development-environnement) | Development Environnement | Open a shell inside the PHP container (Laravel) |
+| [`make shell-front`](#development-environnement) | Development Environnement | Open a shell inside the Node.js container |
+| [`make shell-db`](#development-environnement) | Development Environnement | Open a shell inside the PostgreSQL container |
+| [`make install-back`](#setup--initialization) | Setup & Initialization | Install backend (Composer) |
+| [`make install-front`](#setup--initialization) | Setup & Initialization | Install frontend (NPM) dependencies |
+| [`make install`](#setup--initialization) | Setup & Initialization | Run both backend and frontend installations |
 | [`make migrate`](#database) | Database | Run database migrations |
 | [`make seed`](#database) | Database | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! |
-| [`make test-back`](#quality) | Quality | Run unit tests (Pest/PHPUnit) |
-| [`make lint-front`](#quality) | Quality | Lint frontend code (ESLint) |
-| [`make lint-back`](#quality) | Quality | Lint backend code (PHP-CS-Fixer dry-run) |
-| [`make fix-front`](#quality) | Quality | Fix frontend code style and format |
-| [`make fix-back`](#quality) | Quality | Fix backend code style |
-| [`make lint`](#quality) | Quality | Run all linters (front & back) |
-| [`make fix`](#quality) | Quality | Fix all code style issues (front & back) |
+| [`make test-back`](#code-quality) | Code Quality | Run unit tests (Pest/PHPUnit) |
+| [`make lint-front`](#code-quality) | Code Quality | Lint frontend code (ESLint) |
+| [`make lint-back`](#code-quality) | Code Quality | Lint backend code (PHP-CS-Fixer dry-run) |
+| [`make fix-front`](#code-quality) | Code Quality | Fix frontend code style and format |
+| [`make fix-back`](#code-quality) | Code Quality | Fix backend code style |
+| [`make lint`](#code-quality) | Code Quality | Run all linters (front & back) |
+| [`make fix`](#code-quality) | Code Quality | Fix all code style issues (front & back) |
 | [`make build-front`](#deployment) | Deployment | Compile Frontend assets (Vite/Mix) |
 | [`make deploy`](#deployment) | Deployment | Deploy to Production <br> 1. Build frontend assets <br> 2. Optimize Laravel cache <br> 3. Run migrations force |
 
@@ -30,7 +30,7 @@
 ## Workflow Graph
 ```mermaid
 flowchart LR
-    subgraph Development
+    subgraph Development_Environnement[Development Environnement]
         up(up)
         down(down)
         logs(logs)
@@ -38,7 +38,7 @@ flowchart LR
         shell-front(shell-front)
         shell-db(shell-db)
     end
-    style Development fill:transparent,stroke-dasharray: 5 5
+    style Development_Environnement fill:transparent,stroke-dasharray: 5 5
     classDef cat0 fill:#E1F5FE,stroke:#01579B,stroke-width:2px,color:#000;
     class up cat0
     class down cat0
@@ -46,17 +46,17 @@ flowchart LR
     class shell-back cat0
     class shell-front cat0
     class shell-db cat0
-    subgraph Setup
+    subgraph Setup_&_Initialization[Setup & Initialization]
         install-back(install-back)
         install-front(install-front)
         install(install)
     end
-    style Setup fill:transparent,stroke-dasharray: 5 5
+    style Setup_&_Initialization fill:transparent,stroke-dasharray: 5 5
     classDef cat1 fill:#E8F5E9,stroke:#1B5E20,stroke-width:2px,color:#000;
     class install-back cat1
     class install-front cat1
     class install cat1
-    subgraph Database
+    subgraph Database[Database]
         migrate(migrate)
         seed(seed)
     end
@@ -64,7 +64,7 @@ flowchart LR
     classDef cat2 fill:#FFF3E0,stroke:#E65100,stroke-width:2px,color:#000;
     class migrate cat2
     class seed cat2
-    subgraph Quality
+    subgraph Code_Quality[Code Quality]
         test-back(test-back)
         lint-front(lint-front)
         lint-back(lint-back)
@@ -73,7 +73,7 @@ flowchart LR
         lint(lint)
         fix(fix)
     end
-    style Quality fill:transparent,stroke-dasharray: 5 5
+    style Code_Quality fill:transparent,stroke-dasharray: 5 5
     classDef cat3 fill:#F3E5F5,stroke:#4A148C,stroke-width:2px,color:#000;
     class test-back cat3
     class lint-front cat3
@@ -82,7 +82,7 @@ flowchart LR
     class fix-back cat3
     class lint cat3
     class fix cat3
-    subgraph Deployment
+    subgraph Deployment[Deployment]
         build-front(build-front)
         deploy(deploy)
     end
@@ -118,7 +118,7 @@ flowchart LR
 
 ## Section Details
 
-### Development
+### Development Environnement
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
 | `make up` | Start the full development environment (Docker) | - | `PORT` |
@@ -128,7 +128,7 @@ flowchart LR
 | `make shell-front` | Open a shell inside the Node.js container | `up` | - |
 | `make shell-db` | Open a shell inside the PostgreSQL container | `up` | - |
 
-### Setup
+### Setup & Initialization
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
 | `make install-back` | Install backend (Composer) | - | - |
@@ -141,7 +141,7 @@ flowchart LR
 | `make migrate` | Run database migrations | `up`, `install` | - |
 | `make seed` | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! | `migrate` | `SEED_CLASS` |
 
-### Quality
+### Code Quality
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
 | `make test-back` | Run unit tests (Pest/PHPUnit) | `install` | - |

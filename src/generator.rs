@@ -30,12 +30,11 @@ fn generate_cheat_sheet(doc: &MakefileDoc) -> String {
 
     for cat in &doc.categories {
         for cmd in &cat.commands {
-            let link = cat.name.to_lowercase();
+            let anchor = slugify(&cat.name);
             let desc = cmd.description.replace("\\n", "<br>");
-
             section.push_str(&format!(
                 "| [`make {}`](#{}) | {} | {} |\n",
-                cmd.name, link, cat.name, desc
+                cmd.name, anchor, cat.name, desc
             ));
         }
     }
@@ -51,7 +50,7 @@ fn generate_workflow_graph(doc: &MakefileDoc) -> String {
     for (i, cat) in doc.categories.iter().enumerate() {
         let safe_cat_name = cat.name.replace(" ", "_");
 
-        section.push_str(&format!("    subgraph {}\n", safe_cat_name));
+        section.push_str(&format!("    subgraph {}[{}]\n", safe_cat_name, cat.name));
 
         for cmd in &cat.commands {
             section.push_str(&format!("        {}({})\n", cmd.name, cmd.name));
@@ -138,4 +137,13 @@ fn format_list(items: &[String]) -> String {
             .collect::<Vec<_>>()
             .join(", ")
     }
+}
+
+fn slugify(text: &str) -> String {
+    text.trim()
+        .to_lowercase()
+        .chars()
+        .map(|c| if c.is_whitespace() { '-' } else { c })
+        .filter(|c| c.is_alphanumeric() || *c == '-')
+        .collect()
 }

@@ -1,5 +1,5 @@
 # ==============================================================================
-## @category Development
+## @category Development Environnement
 # ==============================================================================
 
 ## @description Start the full development environment (Docker)
@@ -32,7 +32,7 @@ shell-db:
 	# docker compose exec app bash
 
 # ==============================================================================
-## @category Setup
+## @category Setup & Initialization
 # ==============================================================================
 
 ## @description Install backend (Composer)
@@ -63,7 +63,7 @@ seed:
 	# docker compose exec app php artisan migrate:refresh --seed
 
 # ==============================================================================
-## @category Quality
+## @category Code Quality
 # ==============================================================================
 
 ## @description Run unit tests (Pest/PHPUnit)
