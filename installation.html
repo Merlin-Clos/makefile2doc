@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-adb13462.js";
+            window.path_to_searchindex_js = "searchindex-d6041463.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-bb925fd6.js"></script>
@@ -186,19 +186,23 @@
 <ol>
 <li>Go to the <strong><a href="https://github.com/Merlin-Clos/makefile2doc/releases/latest">GitHub Releases page</a></strong>.</li>
 <li>Download the file matching your OS and architecture (e.g., <code>makefile2doc-linux-amd64</code>).</li>
-<li><strong>Rename the file</strong> to <code>makefile2doc</code> (or <code>makefile2doc.exe</code> on Windows) to make it easier to use.</li>
+<li>Follow the setup instructions below for your operating system.</li>
 </ol>
 <h2 id="2-setup"><a class="header" href="#2-setup">2. Setup</a></h2>
 <h3 id="linux--macos"><a class="header" href="#linux--macos">Linux &amp; macOS</a></h3>
 <p>To use the command globally, make it executable and move it to a folder in your system <code>$PATH</code>.</p>
 <p><em>Assuming you are in the folder where you downloaded the file:</em></p>
-<pre><code class="language-bash">chmod +x makefile2doc
-sudo mv makefile2doc /usr/local/bin/
+<pre><code class="language-bash"># 1. Give execution permissions
+chmod +x makefile2doc-*
+
+# Note: Ensure you only have one version of the file in the folder to avoid errors.
+sudo mv makefile2doc-* /usr/local/bin/makefile2doc
 </code></pre>
 <h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
 <ol>
 <li>Create a folder for your CLI tools (e.g., <code>C:\Tools</code>)</li>
-<li>Move <code>makefile2doc.exe</code> into this folder.</li>
+<li>Move the downloaded file (e.g., <code>makefile2doc-windows-amd64.exe</code>) into this folder.</li>
+<li>Rename the file to <code>makefile2doc.exe</code>.</li>
 <li>Add this folder to your <strong>PATH</strong> environment variable:
 <ul>
 <li>Search “Env” in the Start Menu</li>
@@ -215,9 +219,9 @@ sudo mv makefile2doc /usr/local/bin/
 <p>If you see the help menu, you are ready to use it!</p>
 <h2 id="4-developer-installation-via-cargo"><a class="header" href="#4-developer-installation-via-cargo">4. Developer Installation (via Cargo)</a></h2>
 <p>If you already have Rust and Cargo installed on your machine, you can install the tool directly from the source code.</p>
-<pre><code class="language-bash">cargo install --git https://github.com/Merlin-Clos/makefile2doc
+<pre><code class="language-bash">cargo install --git https://github.com/Merlin-Clos/makefile2doc --locked
 </code></pre>
-<p>This will compile the project and place the binary in your ~/.cargo/bin folder.</p>
+<p>This will compile the project and place the binary in your <code>~/.cargo/bin</code> folder.</p>
 
                     </main>
 
