@@ -150,7 +150,7 @@ dependencies = [
 
 [[package]]
 name = "makefile2doc"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "clap",
  "lazy-regex",
