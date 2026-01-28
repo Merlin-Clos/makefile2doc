@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d6041463.js";
+            window.path_to_searchindex_js = "searchindex-90a8464f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-bb925fd6.js"></script>
+        <script src="toc-eae25d04.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -652,6 +652,48 @@ migrate:
 ## @env PORT, NODE_ENV
 start:
     ...
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="automation--cicd"><a class="header" href="#automation--cicd">Automation &amp; CI/CD</a></h1>
+<p>Documentation is misleading if it is not up-to-date.</p>
+<p>Instead of remembering to run <code>makefile2doc</code> manually after every change, you should let your CI pipeline handle it.
+The logic is simple: <strong>if <code>Makefile</code> is modified, regenerate <code>MAKEFILE.md</code> and commit the result.</strong></p>
+<h2 id="github-actions-example"><a class="header" href="#github-actions-example">GitHub Actions Example</a></h2>
+<p>Here is a ready-to-use workflow using <a href="https://github.com/marketplace/actions/checkout">checkout</a> and the <a href="https://github.com/marketplace/actions/git-auto-commit">git-auto-commit Action</a> (check links for latest versions).</p>
+<p>Create <code>.github/workflows/update-docs.yml</code>:</p>
+<pre><code class="language-yaml">name: Update Makefile Doc
+
+on:
+  push:
+    paths:
+      - "Makefile" # Trigger only when the Makefile changes
+
+permissions:
+  contents: write # Required to push the new commit
+
+jobs:
+  update-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install makefile2doc
+        env:
+          # Check the latest version: https://github.com/Merlin-Clos/makefile2doc/releases
+          VERSION: v0.1.2
+        run: |
+          curl -L -o makefile2doc https://github.com/Merlin-Clos/makefile2doc/releases/download/${VERSION}/makefile2doc-linux-amd64
+          chmod +x makefile2doc
+          sudo mv makefile2doc /usr/local/bin/
+
+      - name: Generate Documentation
+        run: makefile2doc
+
+      - name: Commit &amp; Push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "docs: auto-update MAKEFILE.md"
+          file_pattern: MAKEFILE.md
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ai-ready-documentation"><a class="header" href="#ai-ready-documentation">AI-Ready Documentation</a></h1>
