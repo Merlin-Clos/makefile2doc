@@ -31,7 +31,7 @@ jobs:
       - name: Install makefile2doc
         env:
           # Check the latest version: https://github.com/Merlin-Clos/makefile2doc/releases
-          VERSION: v0.1.2
+          VERSION: v0.1.3
         run: |
           curl -L -o makefile2doc https://github.com/Merlin-Clos/makefile2doc/releases/download/${VERSION}/makefile2doc-linux-amd64
           chmod +x makefile2doc
