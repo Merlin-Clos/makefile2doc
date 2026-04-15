@@ -1,4 +1,3 @@
-use makefile2doc;
 use pretty_assertions::assert_eq;
 use std::fs;
 

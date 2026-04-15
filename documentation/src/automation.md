@@ -9,7 +9,7 @@ The logic is simple: **if `Makefile` is modified, regenerate `MAKEFILE.md` and c
 
 Here is a ready-to-use workflow using [checkout](https://github.com/marketplace/actions/checkout) and the [git-auto-commit Action](https://github.com/marketplace/actions/git-auto-commit) (check links for latest versions).
 
-Create `.github/workflows/update-docs.yml`:
+Create `.github/workflows/makefile2doc.yml`:
 
 ```yaml
 name: Update Makefile Doc

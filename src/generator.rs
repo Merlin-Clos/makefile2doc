@@ -1,6 +1,7 @@
-use crate::model::MakefileDoc;
+use crate::{anchor::AnchorManager, model::MakefileDoc};
 
 pub fn generate(doc: &MakefileDoc) -> String {
+    let anchors = AnchorManager::build(doc);
     let mut md = String::new();
 
     md.push_str("# Makefile Documentation\n");
@@ -9,7 +10,7 @@ pub fn generate(doc: &MakefileDoc) -> String {
         env!("CARGO_PKG_REPOSITORY"),
         ")*\n\n"
     ));
-    md.push_str(&generate_cheat_sheet(doc));
+    md.push_str(&generate_cheat_sheet(doc, &anchors));
 
     md.push_str("\n---\n\n");
 
@@ -17,24 +18,26 @@ pub fn generate(doc: &MakefileDoc) -> String {
 
     md.push_str("\n---\n\n");
 
-    md.push_str(&generate_section_details(doc));
+    md.push_str(&generate_section_details(doc, &anchors));
     md
 }
 
-fn generate_cheat_sheet(doc: &MakefileDoc) -> String {
+fn generate_cheat_sheet(doc: &MakefileDoc, anchors: &AnchorManager) -> String {
     let mut section = String::new();
 
     section.push_str("## Cheat Sheet\n");
     section.push_str("| Command | Category | Description |\n");
     section.push_str("| :--- | :--- | :--- |\n");
 
-    for cat in &doc.categories {
-        for cmd in &cat.commands {
-            let anchor = slugify(&cat.name);
+    for (cat_idx, cat) in doc.categories.iter().enumerate() {
+        let category_anchor = anchors.category_id(cat_idx);
+
+        for (cmd_idx, cmd) in cat.commands.iter().enumerate() {
+            let command_anchor = anchors.command_id(cat_idx, cmd_idx);
             let desc = cmd.description.replace("\\n", "<br>");
             section.push_str(&format!(
-                "| [`make {}`](#{}) | {} | {} |\n",
-                cmd.name, anchor, cat.name, desc
+                "| [`make {}`](#{}) | [{}](#{}) | {} |\n",
+                cmd.name, command_anchor, cat.name, category_anchor, desc
             ));
         }
     }
@@ -81,7 +84,7 @@ fn generate_workflow_graph(doc: &MakefileDoc) -> String {
         }
     }
 
-    section.push_str("\n");
+    section.push('\n');
     for cat in &doc.categories {
         for cmd in &cat.commands {
             for dep in &cmd.dependencies {
@@ -94,29 +97,39 @@ fn generate_workflow_graph(doc: &MakefileDoc) -> String {
     section
 }
 
-fn generate_section_details(doc: &MakefileDoc) -> String {
+fn generate_section_details(doc: &MakefileDoc, anchors: &AnchorManager) -> String {
     let mut section = String::new();
 
     section.push_str("## Section Details\n");
 
-    for cat in &doc.categories {
-        section.push_str(&format!("\n### {}\n", cat.name));
+    for (cat_idx, cat) in doc.categories.iter().enumerate() {
+        let category_anchor = anchors.category_id(cat_idx);
+        section.push_str(&format!(
+            "\n<a id=\"{}\"></a>\n### {}\n",
+            category_anchor, cat.name
+        ));
         section.push_str("| Command | Description | Dependencies | Required Variables |\n");
         section.push_str("| :--- | :--- | :--- | :--- |\n");
 
-        for cmd in &cat.commands {
+        for (cmd_idx, cmd) in cat.commands.iter().enumerate() {
+            let name = format_name(&cmd.name, anchors.command_id(cat_idx, cmd_idx));
             let desc = format_description(&cmd.description);
             let deps = format_list(&cmd.dependencies);
             let envs = format_list(&cmd.env);
 
-            section.push_str(&format!(
-                "| `make {}` | {} | {} | {} |\n",
-                cmd.name, desc, deps, envs
-            ));
+            section.push_str(&format!("| {} | {} | {} | {} |\n", name, desc, deps, envs));
         }
     }
 
     section
+}
+
+fn format_name(cmd: &str, anchor_id: &str) -> String {
+    if cmd.is_empty() {
+        "-".to_string()
+    } else {
+        format!("<a id=\"{}\"></a>`make {}`", anchor_id, cmd)
+    }
 }
 
 fn format_description(desc: &str) -> String {
@@ -137,13 +150,4 @@ fn format_list(items: &[String]) -> String {
             .collect::<Vec<_>>()
             .join(", ")
     }
-}
-
-fn slugify(text: &str) -> String {
-    text.trim()
-        .to_lowercase()
-        .chars()
-        .map(|c| if c.is_whitespace() { '-' } else { c })
-        .filter(|c| c.is_alphanumeric() || *c == '-')
-        .collect()
 }
