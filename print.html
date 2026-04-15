@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-90a8464f.js";
+            window.path_to_searchindex_js = "searchindex-28716316.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-eae25d04.js"></script>
@@ -660,7 +660,7 @@ start:
 The logic is simple: <strong>if <code>Makefile</code> is modified, regenerate <code>MAKEFILE.md</code> and commit the result.</strong></p>
 <h2 id="github-actions-example"><a class="header" href="#github-actions-example">GitHub Actions Example</a></h2>
 <p>Here is a ready-to-use workflow using <a href="https://github.com/marketplace/actions/checkout">checkout</a> and the <a href="https://github.com/marketplace/actions/git-auto-commit">git-auto-commit Action</a> (check links for latest versions).</p>
-<p>Create <code>.github/workflows/update-docs.yml</code>:</p>
+<p>Create <code>.github/workflows/makefile2doc.yml</code>:</p>
 <pre><code class="language-yaml">name: Update Makefile Doc
 
 on:
