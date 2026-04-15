@@ -1,5 +1,6 @@
 use crate::{generator::generate, parser::parse};
 
+pub mod anchor;
 pub mod generator;
 pub mod model;
 pub mod parser;

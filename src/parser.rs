@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn clean_content_edge_cases() {
-        let bad_inputs = vec![
+        let bad_inputs = [
             "",         // Empty
             "   ",      // Spaces
             "\n",       // Line break

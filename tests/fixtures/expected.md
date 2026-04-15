@@ -4,26 +4,26 @@
 ## Cheat Sheet
 | Command | Category | Description |
 | :--- | :--- | :--- |
-| [`make up`](#development-environnement) | Development Environnement | Start the full development environment (Docker) |
-| [`make down`](#development-environnement) | Development Environnement | Stop all containers |
-| [`make logs`](#development-environnement) | Development Environnement | Show live logs for all services |
-| [`make shell-back`](#development-environnement) | Development Environnement | Open a shell inside the PHP container (Laravel) |
-| [`make shell-front`](#development-environnement) | Development Environnement | Open a shell inside the Node.js container |
-| [`make shell-db`](#development-environnement) | Development Environnement | Open a shell inside the PostgreSQL container |
-| [`make install-back`](#setup--initialization) | Setup & Initialization | Install backend (Composer) |
-| [`make install-front`](#setup--initialization) | Setup & Initialization | Install frontend (NPM) dependencies |
-| [`make install`](#setup--initialization) | Setup & Initialization | Run both backend and frontend installations |
-| [`make migrate`](#database) | Database | Run database migrations |
-| [`make seed`](#database) | Database | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! |
-| [`make test-back`](#code-quality) | Code Quality | Run unit tests (Pest/PHPUnit) |
-| [`make lint-front`](#code-quality) | Code Quality | Lint frontend code (ESLint) |
-| [`make lint-back`](#code-quality) | Code Quality | Lint backend code (PHP-CS-Fixer dry-run) |
-| [`make fix-front`](#code-quality) | Code Quality | Fix frontend code style and format |
-| [`make fix-back`](#code-quality) | Code Quality | Fix backend code style |
-| [`make lint`](#code-quality) | Code Quality | Run all linters (front & back) |
-| [`make fix`](#code-quality) | Code Quality | Fix all code style issues (front & back) |
-| [`make build-front`](#deployment) | Deployment | Compile Frontend assets (Vite/Mix) |
-| [`make deploy`](#deployment) | Deployment | Deploy to Production <br> 1. Build frontend assets <br> 2. Optimize Laravel cache <br> 3. Run migrations force |
+| [`make up`](#cmd-up) | [Development Environnement](#cat-development-environnement) | Start the full development environment (Docker) |
+| [`make down`](#cmd-down) | [Development Environnement](#cat-development-environnement) | Stop all containers |
+| [`make logs`](#cmd-logs) | [Development Environnement](#cat-development-environnement) | Show live logs for all services |
+| [`make shell-back`](#cmd-shell-back) | [Development Environnement](#cat-development-environnement) | Open a shell inside the PHP container (Laravel) |
+| [`make shell-front`](#cmd-shell-front) | [Development Environnement](#cat-development-environnement) | Open a shell inside the Node.js container |
+| [`make shell-db`](#cmd-shell-db) | [Development Environnement](#cat-development-environnement) | Open a shell inside the PostgreSQL container |
+| [`make install-back`](#cmd-install-back) | [Setup & Initialization](#cat-setup-initialization) | Install backend (Composer) |
+| [`make install-front`](#cmd-install-front) | [Setup & Initialization](#cat-setup-initialization) | Install frontend (NPM) dependencies |
+| [`make install`](#cmd-install) | [Setup & Initialization](#cat-setup-initialization) | Run both backend and frontend installations |
+| [`make migrate`](#cmd-migrate) | [Database](#cat-database) | Run database migrations |
+| [`make seed`](#cmd-seed) | [Database](#cat-database) | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! |
+| [`make test-back`](#cmd-test-back) | [Code Quality](#cat-code-quality) | Run unit tests (Pest/PHPUnit) |
+| [`make lint-front`](#cmd-lint-front) | [Code Quality](#cat-code-quality) | Lint frontend code (ESLint) |
+| [`make lint-back`](#cmd-lint-back) | [Code Quality](#cat-code-quality) | Lint backend code (PHP-CS-Fixer dry-run) |
+| [`make fix-front`](#cmd-fix-front) | [Code Quality](#cat-code-quality) | Fix frontend code style and format |
+| [`make fix-back`](#cmd-fix-back) | [Code Quality](#cat-code-quality) | Fix backend code style |
+| [`make lint`](#cmd-lint) | [Code Quality](#cat-code-quality) | Run all linters (front & back) |
+| [`make fix`](#cmd-fix) | [Code Quality](#cat-code-quality) | Fix all code style issues (front & back) |
+| [`make build-front`](#cmd-build-front) | [Deployment](#cat-deployment) | Compile Frontend assets (Vite/Mix) |
+| [`make deploy`](#cmd-deploy) | [Deployment](#cat-deployment) | Deploy to Production <br> 1. Build frontend assets <br> 2. Optimize Laravel cache <br> 3. Run migrations force |
 
 ---
 
@@ -118,42 +118,47 @@ flowchart LR
 
 ## Section Details
 
+<a id="cat-development-environnement"></a>
 ### Development Environnement
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| `make up` | Start the full development environment (Docker) | - | `PORT` |
-| `make down` | Stop all containers | - | - |
-| `make logs` | Show live logs for all services | `up` | - |
-| `make shell-back` | Open a shell inside the PHP container (Laravel) | `up` | - |
-| `make shell-front` | Open a shell inside the Node.js container | `up` | - |
-| `make shell-db` | Open a shell inside the PostgreSQL container | `up` | - |
+| <a id="cmd-up"></a>`make up` | Start the full development environment (Docker) | - | `PORT` |
+| <a id="cmd-down"></a>`make down` | Stop all containers | - | - |
+| <a id="cmd-logs"></a>`make logs` | Show live logs for all services | `up` | - |
+| <a id="cmd-shell-back"></a>`make shell-back` | Open a shell inside the PHP container (Laravel) | `up` | - |
+| <a id="cmd-shell-front"></a>`make shell-front` | Open a shell inside the Node.js container | `up` | - |
+| <a id="cmd-shell-db"></a>`make shell-db` | Open a shell inside the PostgreSQL container | `up` | - |
 
+<a id="cat-setup-initialization"></a>
 ### Setup & Initialization
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| `make install-back` | Install backend (Composer) | - | - |
-| `make install-front` | Install frontend (NPM) dependencies | - | - |
-| `make install` | Run both backend and frontend installations | `install-back`, `install-front` | - |
+| <a id="cmd-install-back"></a>`make install-back` | Install backend (Composer) | - | - |
+| <a id="cmd-install-front"></a>`make install-front` | Install frontend (NPM) dependencies | - | - |
+| <a id="cmd-install"></a>`make install` | Run both backend and frontend installations | `install-back`, `install-front` | - |
 
+<a id="cat-database"></a>
 ### Database
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| `make migrate` | Run database migrations | `up`, `install` | - |
-| `make seed` | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! | `migrate` | `SEED_CLASS` |
+| <a id="cmd-migrate"></a>`make migrate` | Run database migrations | `up`, `install` | - |
+| <a id="cmd-seed"></a>`make seed` | Reset the DB and run seeds (Test data) <br> Warning: This deletes all data! | `migrate` | `SEED_CLASS` |
 
+<a id="cat-code-quality"></a>
 ### Code Quality
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| `make test-back` | Run unit tests (Pest/PHPUnit) | `install` | - |
-| `make lint-front` | Lint frontend code (ESLint) | `install-front` | - |
-| `make lint-back` | Lint backend code (PHP-CS-Fixer dry-run) | `install-back` | - |
-| `make fix-front` | Fix frontend code style and format | `install-front` | - |
-| `make fix-back` | Fix backend code style | `install-back` | - |
-| `make lint` | Run all linters (front & back) | `lint-front`, `lint-back` | - |
-| `make fix` | Fix all code style issues (front & back) | `fix-front`, `fix-back` | - |
+| <a id="cmd-test-back"></a>`make test-back` | Run unit tests (Pest/PHPUnit) | `install` | - |
+| <a id="cmd-lint-front"></a>`make lint-front` | Lint frontend code (ESLint) | `install-front` | - |
+| <a id="cmd-lint-back"></a>`make lint-back` | Lint backend code (PHP-CS-Fixer dry-run) | `install-back` | - |
+| <a id="cmd-fix-front"></a>`make fix-front` | Fix frontend code style and format | `install-front` | - |
+| <a id="cmd-fix-back"></a>`make fix-back` | Fix backend code style | `install-back` | - |
+| <a id="cmd-lint"></a>`make lint` | Run all linters (front & back) | `lint-front`, `lint-back` | - |
+| <a id="cmd-fix"></a>`make fix` | Fix all code style issues (front & back) | `fix-front`, `fix-back` | - |
 
+<a id="cat-deployment"></a>
 ### Deployment
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| `make build-front` | Compile Frontend assets (Vite/Mix) | `install` | - |
-| `make deploy` | Deploy to Production <br> 1. Build frontend assets <br> 2. Optimize Laravel cache <br> 3. Run migrations force | `build-front`, `migrate` | `APP_KEY`, `SSH_USER` |
+| <a id="cmd-build-front"></a>`make build-front` | Compile Frontend assets (Vite/Mix) | `install` | - |
+| <a id="cmd-deploy"></a>`make deploy` | Deploy to Production <br> 1. Build frontend assets <br> 2. Optimize Laravel cache <br> 3. Run migrations force | `build-front`, `migrate` | `APP_KEY`, `SSH_USER` |
