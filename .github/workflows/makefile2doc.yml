@@ -1,0 +1,27 @@
+name: makefile2doc
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Generated Makefile documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust from rust-toolchain.toml
+        run: rustup show active-toolchain
+
+      - name: Generate documentation
+        run: cargo run --locked -- --input Makefile --output "$RUNNER_TEMP/MAKEFILE.md"
+
+      - name: Check generated documentation
+        run: |
+          if ! diff -u MAKEFILE.md "$RUNNER_TEMP/MAKEFILE.md"; then
+            echo "::error file=MAKEFILE.md::MAKEFILE.md is stale. Run 'make docs' and commit the result."
+            exit 1
+          fi

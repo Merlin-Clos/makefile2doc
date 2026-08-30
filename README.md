@@ -26,6 +26,19 @@ You don't need Rust installed. Simply download the binary for your OS (Windows, 
 
 ---
 
+## Development
+
+Check that the required development tools are available:
+
+```bash
+make check-tools
+```
+
+See [MAKEFILE.md](MAKEFILE.md) for the complete command reference and
+development workflow.
+
+---
+
 ## 📄 License
 
 This project is licensed under either of:
