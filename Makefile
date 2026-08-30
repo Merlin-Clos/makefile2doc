@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
-STEP = @printf '\n=== %s ===\n\n'
-OK = @printf '\n✓ %s\n'
+STEP = @printf '=== %s ===\n'
+OK = @printf '✓ %s\n\n'
 
 .PHONY: help check-tools check fmt-check fmt lint test test-unit test-one test-integration build-debug build-release docs
 
@@ -10,7 +10,12 @@ OK = @printf '\n✓ %s\n'
 ## @description Show the generated development command reference
 help:
 	$(STEP) "Development commands"
-	@./scripts/show-markdown.sh MAKEFILE.md
+	@if command -v mdcat >/dev/null 2>&1; then \
+		mdcat MAKEFILE.md; \
+	else \
+		cat MAKEFILE.md; \
+	fi
+	@printf '\n'
 
 ## @description Verify that all tools required by the development workflow are available
 check-tools:
@@ -29,18 +34,19 @@ check-tools:
 		fi; \
 	done; \
 	test "$$missing" -eq 0
-	$(OK) "All required tools are available"
+	@printf '✓ All required tools are available\n'
 	@if command -v mdcat >/dev/null 2>&1; then \
 		printf '✓ Recommended Markdown renderer is available: mdcat\n'; \
 	else \
 		printf 'Recommended: install mdcat for rendered help: https://github.com/BIRSAx2/mdcat\n'; \
 	fi
+	@printf '\n'
 
 ## @category Quality
 
 ## @description Run every local quality check
-## @depends fmt-check, lint, test
-check: fmt-check lint test
+## @depends check-tools, fmt-check, lint, test
+check: check-tools fmt-check lint test
 	$(OK) "All local quality checks passed"
 
 ## @description Check Rust formatting without modifying files
@@ -77,8 +83,10 @@ test-unit:
 test-one:
 	$(STEP) "Running one library unit test"
 	@test -n "$(TEST)" || { printf 'Usage: make test-one TEST=module::tests::name\n'; exit 2; }
+	@set -e; output=$$(cargo test --locked --lib "$(TEST)" -- --exact --list 2>&1) || { printf '%s\n' "$$output"; exit 1; }; \
+	case "$$output" in *"$(TEST): test"*) ;; *) printf 'No library unit test matches TEST=%s\n' "$(TEST)" >&2; exit 1;; esac
 	cargo test --locked --lib "$(TEST)" -- --exact
-	$(OK) "Selected library unit test passed"
+	$(OK) "Library unit test $(TEST) passed"
 
 ## @description Run only the integration test target
 test-integration:
@@ -106,3 +114,4 @@ build-release:
 docs:
 	$(STEP) "Generating Makefile documentation"
 	cargo run --locked -- --input Makefile --output MAKEFILE.md
+	$(OK) "Makefile documentation generated"

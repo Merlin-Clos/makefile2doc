@@ -3,13 +3,7 @@
 Documentation is misleading if it is not up-to-date.
 
 Instead of remembering to run `makefile2doc` manually after every change, you should let your CI pipeline handle it.
-
-There are two useful strategies:
-
-- regenerate `MAKEFILE.md` and commit the result automatically;
-- generate a temporary file and fail the CI job when the committed documentation is stale.
-
-The first strategy is convenient when generated commits are acceptable. The second keeps CI read-only and requires contributors to commit the generated file with their Makefile change.
+The logic is simple: **if `Makefile` is modified, regenerate `MAKEFILE.md` and commit the result.**
 
 ## GitHub Actions Example
 
@@ -52,7 +46,3 @@ jobs:
           commit_message: "docs: auto-update MAKEFILE.md"
           file_pattern: MAKEFILE.md
 ```
-
-## Blocking Drift Check
-
-This repository uses the read-only strategy on every pull request. The workflow generates documentation with the binary from the current checkout, compares it with the committed `MAKEFILE.md`, and fails without modifying tracked files when they differ. Contributors fix the check by running `make docs` and committing the result.

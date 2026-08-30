@@ -66,6 +66,7 @@ flowchart LR
     classDef cat3 fill:#F3E5F5,stroke:#4A148C,stroke-width:2px,color:#000;
     class docs cat3
 
+    check --> check-tools
     check --> fmt-check
     check --> lint
     check --> test
@@ -86,7 +87,7 @@ flowchart LR
 ### Quality
 | Command | Description | Dependencies | Required Variables |
 | :--- | :--- | :--- | :--- |
-| <a id="cmd-check"></a>`make check` | Run every local quality check | `fmt-check`, `lint`, `test` | - |
+| <a id="cmd-check"></a>`make check` | Run every local quality check | `check-tools`, `fmt-check`, `lint`, `test` | - |
 | <a id="cmd-fmt-check"></a>`make fmt-check` | Check Rust formatting without modifying files | - | - |
 | <a id="cmd-fmt"></a>`make fmt` | Format all Rust sources | - | - |
 | <a id="cmd-lint"></a>`make lint` | Run Clippy on every target and feature with warnings denied | - | - |

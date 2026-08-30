@@ -28,16 +28,14 @@ You don't need Rust installed. Simply download the binary for your OS (Windows, 
 
 ## Development
 
-The repository Makefile is the official interface for development commands.
-It is documented by `makefile2doc` itself in [MAKEFILE.md](MAKEFILE.md).
+Check that the required development tools are available:
 
 ```bash
 make check-tools
-make check
 ```
 
-Use `make test-one TEST=module::tests::name` to run one exact unit test and
-`make docs` after changing the Makefile annotations.
+See [MAKEFILE.md](MAKEFILE.md) for the complete command reference and
+development workflow.
 
 ---
 

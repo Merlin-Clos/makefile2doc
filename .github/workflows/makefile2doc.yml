@@ -1,4 +1,4 @@
-name: Verify Makefile documentation
+name: makefile2doc
 
 on:
   pull_request:
